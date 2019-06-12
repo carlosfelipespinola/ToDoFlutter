@@ -25,7 +25,35 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () {}
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return Container(
+                padding: EdgeInsets.only(
+                  left: 16.0,
+                  right: 16.0,
+                  top: 16.0,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 16.0
+                ),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(labelText: "ToDo list name"),
+                      ),
+                    ),
+                    FlatButton(
+                      onPressed: () {},
+                      child: Text("ADD"),
+                      color: Theme.of(context).primaryColor,
+                    )
+                  ],
+                ),
+              );
+            }
+          );
+        }
       ),
     );
   }
