@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_flutter/to-do/pages/HomePage.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,9 +9,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
+        primarySwatch: Colors.deepPurple,
+        primaryColor: Colors.deepPurple,
+        accentColor: Colors.pink
       ),
-      home: Container(),
+      home: HomePage(),
     );
   }
 }
