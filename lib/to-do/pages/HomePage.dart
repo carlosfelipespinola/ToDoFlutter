@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_flutter/to-do/pages/ToDoListPage.dart';
 import 'package:to_do_flutter/to-do/widgets/ToDoTile.dart';
 
 class HomePage extends StatelessWidget {
@@ -15,10 +16,16 @@ class HomePage extends StatelessWidget {
             ToDoTile(
               title: "Filmes da Marvel",
               progress: 1.0,
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ToDoListPage()));
+              },
             ),
             ToDoTile(
               title: "Filmes da DC",
               progress: 0.3,
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ToDoListPage()));
+              },
             ),
           ],
         ),

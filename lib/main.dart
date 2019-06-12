@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.deepPurple,
         accentColor: Colors.pink
       ),
-      home: ToDoListPage(),
+      home: HomePage(),
     );
   }
 }
