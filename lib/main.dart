@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_flutter/to-do/pages/HomePage.dart';
+import 'package:to_do_flutter/to-do/pages/ToDoListPage.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.deepPurple,
         accentColor: Colors.pink
       ),
-      home: HomePage(),
+      home: ToDoListPage(),
     );
   }
 }
