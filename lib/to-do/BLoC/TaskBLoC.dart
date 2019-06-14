@@ -13,7 +13,7 @@ class TaskBloc extends BlocBase {
   StreamSink<List<Task>> get _inTasks => _tasksController.sink;
   Stream<List<Task>> get tasks => _tasksController.stream;
 
-  final _tasksProgressController = StreamController<double>();
+  final _tasksProgressController = StreamController<double>.broadcast();
   StreamSink<double> get _inTasksProgress => _tasksProgressController.sink;
   Stream<double> get tasksProgress => _tasksProgressController.stream;
 
