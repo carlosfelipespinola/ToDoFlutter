@@ -10,12 +10,13 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final toDoListBloc = BlocProvider.getBloc<ToDoListBloc>();
     return Scaffold(
-      appBar: AppBar(title: Text("To-do lists"),),
+      appBar: AppBar(
+        title: Text("To-do lists"),
+      ),
       body: _buildBody(context, toDoListBloc),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => _buildAndShowBottomSheet(context, toDoListBloc)
-      ),
+          child: Icon(Icons.add),
+          onPressed: () => _buildAndShowBottomSheet(context, toDoListBloc)),
     );
   }
 
@@ -25,52 +26,66 @@ class HomePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text('2 listas cadastradas'),
+          _buildToDoListsCounter(context, toDoListBloc),
           Expanded(child: _buildListOfToDoLists(context, toDoListBloc)),
         ],
       ),
     );
   }
 
-  Widget _buildListOfToDoLists(BuildContext context, ToDoListBloc toDoListBloc) {
+  Widget _buildToDoListsCounter(
+      BuildContext context, ToDoListBloc toDoListbloc) {
+    return StreamBuilder<List<ToDoList>>(
+        stream: toDoListbloc.toDoLists,
+        initialData: [],
+        builder: (context, snapshot) {
+          return Text('${snapshot.data.length ?? 0} listas cadastradas');
+        });
+  }
+
+  Widget _buildListOfToDoLists(
+      BuildContext context, ToDoListBloc toDoListBloc) {
     toDoListBloc.addReloadToDoListsEventSink.add(null);
     return StreamBuilder<List<ToDoList>>(
-      stream: toDoListBloc.toDoLists,
-      initialData: [],
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        final toDoLists = snapshot.data;
-        return ListView.builder(
-          itemCount: toDoLists.length,
-          itemBuilder: (context, index) {
-            final currentItem = toDoLists[index];
-            return ToDoTile(
-              title: currentItem.name,
-              progress: (currentItem.percentage / 100),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => ToDoListPage(toDoList: currentItem,)));
-              },
+        stream: toDoListBloc.toDoLists,
+        initialData: [],
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
             );
-          },
-        );
-      }
-    );
+          }
+          final toDoLists = snapshot.data;
+          return ListView.builder(
+            itemCount: toDoLists.length,
+            itemBuilder: (context, index) {
+              final currentItem = toDoLists[index];
+              return ToDoTile(
+                title: currentItem.name,
+                progress: (currentItem.percentage / 100),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ToDoListPage(
+                            toDoList: currentItem,
+                          )));
+                },
+              );
+            },
+          );
+        });
   }
 
   _buildAndShowBottomSheet(BuildContext context, ToDoListBloc toDoListBloc) {
     showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) => _buildModalBottomSheet(context, toDoListBloc)
-    );  
+        context: context,
+        builder: (BuildContext context) =>
+            _buildModalBottomSheet(context, toDoListBloc));
   }
 
-  Widget _buildModalBottomSheet(BuildContext context, ToDoListBloc toDoListBloc) {
-    final TextEditingController toDoListNameController = TextEditingController();
+  Widget _buildModalBottomSheet(
+      BuildContext context, ToDoListBloc toDoListBloc) {
+    final TextEditingController toDoListNameController =
+        TextEditingController();
     return Container(
       padding: EdgeInsets.only(
           left: 16.0,
@@ -89,7 +104,8 @@ class HomePage extends StatelessWidget {
           FlatButton(
             onPressed: () {
               Navigator.of(context).pop();
-              toDoListBloc.addToDoListEventSink.add(ToDoList(name: toDoListNameController.text));
+              toDoListBloc.addToDoListEventSink
+                  .add(ToDoList(name: toDoListNameController.text));
               toDoListNameController.clear();
             },
             child: Text("ADD"),

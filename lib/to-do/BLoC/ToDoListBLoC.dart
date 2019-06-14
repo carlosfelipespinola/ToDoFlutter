@@ -8,7 +8,7 @@ class ToDoListBloc extends BlocBase {
   ToDoListServices _toDoListServices;
 
   List<ToDoList> _toDoLists = [];
-  final _toDoListsController = StreamController<List<ToDoList>>();
+  final _toDoListsController = StreamController<List<ToDoList>>.broadcast();
   StreamSink<List<ToDoList>> get _inToDoLists => _toDoListsController.sink;
   Stream<List<ToDoList>> get toDoLists => _toDoListsController.stream;
 
