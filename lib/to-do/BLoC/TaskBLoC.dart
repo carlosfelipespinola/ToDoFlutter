@@ -13,6 +13,11 @@ class TaskBloc extends BlocBase {
   StreamSink<List<Task>> get _inTasks => _tasksController.sink;
   Stream<List<Task>> get tasks => _tasksController.stream;
 
+  final _tasksProgressController = StreamController<double>();
+  StreamSink<double> get _inTasksProgress => _tasksProgressController.sink;
+  Stream<double> get tasksProgress => _tasksProgressController.stream;
+
+
   final _tasksEventController = StreamController<Task>();
   StreamSink<Task> get addTaskEvent => _tasksEventController.sink;
 
@@ -27,29 +32,43 @@ class TaskBloc extends BlocBase {
 
   void _handleAddToDoListUidEvent(int uid) {
     this.toDoListUid = uid;
-    this._taskServices.getAllTasksFromTodo(this.toDoListUid)
-    .then((tasks) {
-      _tasksOfToDoList = tasks;
-      _inTasks.add(_tasksOfToDoList);
-    })
-    .catchError((error) => {});
+    _updateTasks();
   }
 
   void _handleAddTaskEvent(Task task) async {
     if (task.uid == null) {
-      _taskServices.insertNewTask(task);
+      await _taskServices.insertNewTask(task);
     } else {
-      _taskServices.updateExistingTask(task);
+      await _taskServices.updateExistingTask(task);
     }
+    _updateTasks();
+  }
+
+  void _updateTasks() async {
     _tasksOfToDoList = await _taskServices.getAllTasksFromTodo(toDoListUid);
     _inTasks.add(_tasksOfToDoList);
+    _updateTasksProgress();
   }
+
+  void _updateTasksProgress() {
+    final countCompleted = _tasksOfToDoList.where((item) => item.isFinished).length;
+    final countTotal = _tasksOfToDoList.length;
+    if(countTotal == 0) {
+      _inTasksProgress.add(0);
+      return;
+    }
+    final progress = countCompleted / countTotal;
+    _inTasksProgress.add(progress);
+  }
+
+  
 
   @override
   void dispose() {
     _tasksEventController.close();
     _tasksController.close();
     _loadToDoListEventController.close();
+    _tasksProgressController.close();
     super.dispose();
   }
 }

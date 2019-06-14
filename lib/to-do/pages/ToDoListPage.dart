@@ -58,10 +58,17 @@ class ToDoListPage extends StatelessWidget {
   }
 
   Widget _buildProgressbar(BuildContext context) {
-    return LinearProgressIndicator(
-      value: 0.5,
-      backgroundColor: Theme.of(context).backgroundColor,
-      valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
+    final taskBloc = BlocProvider.getBloc<TaskBloc>();
+    return StreamBuilder<double>(
+      stream: taskBloc.tasksProgress,
+      initialData: 0,
+      builder: (context, snapshot) {
+        return LinearProgressIndicator(
+          value: snapshot.data,
+          backgroundColor: Theme.of(context).backgroundColor,
+          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
+        );
+      }
     );
   }
 
