@@ -33,6 +33,7 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildListOfToDoLists(BuildContext context, ToDoListBloc toDoListBloc) {
+    toDoListBloc.addReloadToDoListsEventSink.add(null);
     return StreamBuilder<List<ToDoList>>(
       stream: toDoListBloc.toDoLists,
       initialData: [],
@@ -49,7 +50,7 @@ class HomePage extends StatelessWidget {
             final currentItem = toDoLists[index];
             return ToDoTile(
               title: currentItem.name,
-              progress: currentItem.percentage,
+              progress: (currentItem.percentage / 100),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => ToDoListPage(toDoList: currentItem,)));

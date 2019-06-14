@@ -4,6 +4,7 @@ import 'package:to_do_flutter/to-do/widgets/ToDoTaskTile.dart';
 import 'package:to_do_flutter/to-do/models/Task.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:to_do_flutter/to-do/BLoC/TaskBLoC.dart';
+import 'package:to_do_flutter/to-do/BLoC/ToDoListBLoC.dart';
 
 enum CollapsedAppBarActions { edit, delete }
 
@@ -81,6 +82,7 @@ class ToDoListPage extends StatelessWidget {
                     change: (checked) {
                       task.isFinished = checked;
                       taskBloc.addTaskEvent.add(task);
+                      BlocProvider.getBloc<ToDoListBloc>().addReloadToDoListsEventSink.add(null);
                     });
               });
         });

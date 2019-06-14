@@ -14,21 +14,28 @@ class ToDoListBloc extends BlocBase {
 
   final _toDoListsEventController = StreamController<ToDoList>();
   StreamSink<ToDoList> get addToDoListEventSink => _toDoListsEventController.sink;
+
+  final _reloadToDoListsEventController = StreamController();
+  StreamSink get addReloadToDoListsEventSink => _reloadToDoListsEventController.sink;
   
   ToDoListBloc() {
-    _toDoListsEventController.stream.listen(_handleAddToDoEvent);
     _toDoListServices = new ToDoListServices();
+    _toDoListsEventController.stream.listen(_handleAddToDoEvent);
+    _reloadToDoListsEventController.stream.listen(_handleAddReloadToDoListsEvent);
     _toDoListServices.getAllToDoLists().then((value) {
       _toDoLists = value;
       _inToDoLists.add(_toDoLists);
     })
-    .catchError((error) {
-
-    });
+    .catchError((error) => {});
   }
 
   void _handleAddToDoEvent(ToDoList toDo) async {
-    _toDoListServices.insertNewTodoList(toDo);
+    await _toDoListServices.insertNewTodoList(toDo);
+    _toDoLists = await _toDoListServices.getAllToDoLists();
+    _inToDoLists.add(_toDoLists);
+  }
+
+  void _handleAddReloadToDoListsEvent(dynamic params) async {
     _toDoLists = await _toDoListServices.getAllToDoLists();
     _inToDoLists.add(_toDoLists);
   }
@@ -37,6 +44,7 @@ class ToDoListBloc extends BlocBase {
   void dispose() {
     _toDoListsController.close();
     _toDoListsEventController.close();
+    _reloadToDoListsEventController.close();
     super.dispose();
   }
 }
