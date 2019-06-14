@@ -1,5 +1,6 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:to_do_flutter/to-do/models/TaskTableDetails.dart';
 import 'package:to_do_flutter/to-do/models/ToDoListTableDetails.dart';
 
 class AppDatabase {
@@ -22,7 +23,8 @@ class AppDatabase {
     return openDatabase(dbPath, version: 1, onCreate: _onCreateDb);
   }
 
-  _onCreateDb(Database db, int version) {
-    return db.execute(createToDoListTableSQL);
+  _onCreateDb(Database db, int version) async {
+    await db.execute(createToDoListTableSQL);
+    await db.execute(createTaskTableSQL);
   }
 }
