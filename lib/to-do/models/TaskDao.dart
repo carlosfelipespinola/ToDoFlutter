@@ -16,6 +16,16 @@ class TaskDao {
     return dbInstance.insert(TASK_TABLE_NAME, map);
   }
 
+  static Future<int> update(Task task) async {
+    Database dbInstance = await AppDatabase.db.instance;
+    return dbInstance.update(
+      TASK_TABLE_NAME,
+      task.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+      where: '$TASK_UID_FIELD = ?', whereArgs: [task.uid]
+    );
+  } 
+
   static Future<List<Task>> getAllTasksFromToDoList(int toDoUid) async {
     Database dbInstance = await AppDatabase.db.instance;
     var sql = 'select * from $TASK_TABLE_NAME where $TASK_TO_DO_UID_NAME = $toDoUid';

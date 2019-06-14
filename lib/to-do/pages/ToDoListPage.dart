@@ -78,7 +78,10 @@ class ToDoListPage extends StatelessWidget {
                 return ToDoTaskTile(
                     title: task.name,
                     checked: task.isFinished,
-                    change: (checked) {});
+                    change: (checked) {
+                      task.isFinished = checked;
+                      taskBloc.addTaskEvent.add(task);
+                    });
               });
         });
   }

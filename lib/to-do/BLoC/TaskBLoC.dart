@@ -27,18 +27,20 @@ class TaskBloc extends BlocBase {
 
   void _handleAddToDoListUidEvent(int uid) {
     this.toDoListUid = uid;
-    print(toDoListUid);
     this._taskServices.getAllTasksFromTodo(this.toDoListUid)
     .then((tasks) {
       _tasksOfToDoList = tasks;
-      print(_tasksOfToDoList);
       _inTasks.add(_tasksOfToDoList);
     })
     .catchError((error) => {});
   }
 
   void _handleAddTaskEvent(Task task) async {
-    _taskServices.insertNewTask(task);
+    if (task.uid == null) {
+      _taskServices.insertNewTask(task);
+    } else {
+      _taskServices.updateExistingTask(task);
+    }
     _tasksOfToDoList = await _taskServices.getAllTasksFromTodo(toDoListUid);
     _inTasks.add(_tasksOfToDoList);
   }
