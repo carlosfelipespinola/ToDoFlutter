@@ -27,4 +27,9 @@ class ToDoListDao {
     var toDoListMap = (await database.rawQuery(sql)).first;
     return ToDoList.fromMap(toDoListMap);
   }
+
+  static Future<int> deleteToDoList(ToDoList toDoList) async {
+    Database dbInstance = await AppDatabase.db.instance;
+    return dbInstance.delete(TO_DO_LIST_TABLE_NAME, where: "uid = ?", whereArgs: [toDoList.uid]);
+  }
 }

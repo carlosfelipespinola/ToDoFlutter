@@ -3,6 +3,8 @@ import 'package:to_do_flutter/to-do/models/ToDoList.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:to_do_flutter/to-do/services/ToDoListServices.dart';
 
+import 'events/ToDoListEvent.dart';
+
 
 class ToDoListBloc extends BlocBase {
   ToDoListServices _toDoListServices;
@@ -12,8 +14,8 @@ class ToDoListBloc extends BlocBase {
   StreamSink<List<ToDoList>> get _inToDoLists => _toDoListsController.sink;
   Stream<List<ToDoList>> get toDoLists => _toDoListsController.stream;
 
-  final _toDoListsEventController = StreamController<ToDoList>();
-  StreamSink<ToDoList> get addToDoListEventSink => _toDoListsEventController.sink;
+  final _toDoListsEventController = StreamController<ToDoListEvent>();
+  StreamSink<ToDoListEvent> get addToDoListEventSink => _toDoListsEventController.sink;
 
   final _reloadToDoListsEventController = StreamController();
   StreamSink get addReloadToDoListsEventSink => _reloadToDoListsEventController.sink;
@@ -29,8 +31,17 @@ class ToDoListBloc extends BlocBase {
     .catchError((error) => {});
   }
 
-  void _handleAddToDoEvent(ToDoList toDo) async {
-    await _toDoListServices.insertNewTodoList(toDo);
+  void _handleAddToDoEvent(ToDoListEvent event) async {
+    switch(event.action) {
+      case Actions.delete:
+        await _toDoListServices.deleteToDoList(event.toDoList);
+        break;
+      case Actions.insert:
+        await _toDoListServices.insertNewTodoList(event.toDoList);
+        break;
+      default:
+        break;
+    }
     _toDoLists = await _toDoListServices.getAllToDoLists();
     _inToDoLists.add(_toDoLists);
   }

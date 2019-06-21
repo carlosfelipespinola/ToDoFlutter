@@ -17,4 +17,7 @@ class ToDoListServices {
     return ToDoListDao.getAll();
   }
 
+  Future<int> deleteToDoList(ToDoList toDoList) async {
+    return ToDoListDao.deleteToDoList(toDoList);
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_flutter/to-do/BLoC/events/ToDoListEvent.dart';
 import 'package:to_do_flutter/to-do/models/ToDoList.dart';
 import 'package:to_do_flutter/to-do/pages/ToDoListPage.dart';
 import 'package:to_do_flutter/to-do/widgets/ToDoTile.dart';
@@ -105,7 +106,7 @@ class HomePage extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).pop();
               toDoListBloc.addToDoListEventSink
-                  .add(ToDoList(name: toDoListNameController.text));
+                  .add(ToDoListEvent(Actions.insert, ToDoList(name: toDoListNameController.text)));
               toDoListNameController.clear();
             },
             child: Text("ADD"),

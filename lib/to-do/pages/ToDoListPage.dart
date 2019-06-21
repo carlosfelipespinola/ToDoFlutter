@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_flutter/to-do/BLoC/events/ToDoListEvent.dart';
 import 'package:to_do_flutter/to-do/models/ToDoList.dart';
 import 'package:to_do_flutter/to-do/widgets/ToDoTaskTile.dart';
 import 'package:to_do_flutter/to-do/models/Task.dart';
@@ -38,12 +39,24 @@ class ToDoListPage extends StatelessWidget {
   }
 
   Widget _buildAppBar(BuildContext context) {
+    final toDoListBloc = BlocProvider.getBloc<ToDoListBloc>();
     return AppBar(
       title: Text(toDoList.name),
       actions: <Widget>[
         IconButton(icon: Icon(Icons.search), onPressed: () {}),
         PopupMenuButton<CollapsedAppBarActions>(
-          onSelected: (CollapsedAppBarActions selectedAction) {},
+          onSelected: (CollapsedAppBarActions selectedAction) {
+            switch (selectedAction) {
+              case CollapsedAppBarActions.edit:
+                break;
+              case CollapsedAppBarActions.delete:
+                toDoListBloc.addToDoListEventSink.add(ToDoListEvent(Actions.delete, toDoList));
+                Navigator.of(context).pop();
+                break;
+              default:
+                break;
+            }
+          },
           itemBuilder: (context) {
             return CollapsedAppBarActions.values.map((item) {
               return PopupMenuItem<CollapsedAppBarActions>(
