@@ -32,4 +32,9 @@ class ToDoListDao {
     Database dbInstance = await AppDatabase.db.instance;
     return dbInstance.delete(TO_DO_LIST_TABLE_NAME, where: "uid = ?", whereArgs: [toDoList.uid]);
   }
+
+  static Future<int> updateToDoList(ToDoList toDoList) async {
+    Database dbInstance = await AppDatabase.db.instance;
+    return dbInstance.update(TO_DO_LIST_TABLE_NAME, toDoList.toMap(), where: "uid = ?", whereArgs: [toDoList.uid]);
+  }
 }

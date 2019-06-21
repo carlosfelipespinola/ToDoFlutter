@@ -39,6 +39,9 @@ class ToDoListBloc extends BlocBase {
       case Actions.insert:
         await _toDoListServices.insertNewTodoList(event.toDoList);
         break;
+      case Actions.update:
+        await _toDoListServices.updateToDoList(event.toDoList);
+        break;
       default:
         break;
     }

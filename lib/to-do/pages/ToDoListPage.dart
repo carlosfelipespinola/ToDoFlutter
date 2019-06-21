@@ -15,14 +15,25 @@ var TO_DOS = [
   {"done": true, "title": "Spiderman: Far From Home"},
 ];
 
-class ToDoListPage extends StatelessWidget {
+class ToDoListPage extends StatefulWidget {
   final ToDoList toDoList;
+
 
   ToDoListPage({Key key, @required this.toDoList}) : super(key: key);
 
   @override
+  _ToDoListPageState createState() => _ToDoListPageState();
+}
+
+class _ToDoListPageState extends State<ToDoListPage> {
+  bool editMode = false;
+  final TextEditingController editTitleController = TextEditingController();
+  final toDoListBloc = BlocProvider.getBloc<ToDoListBloc>();
+  final taskBloc = BlocProvider.getBloc<TaskBloc>();
+  @override
   Widget build(BuildContext context) {
-    BlocProvider.getBloc<TaskBloc>().addToDoListUidEvent.add(this.toDoList.uid);
+    editTitleController.text = this.widget.toDoList.name;
+    taskBloc.addToDoListUidEvent.add(this.widget.toDoList.uid);
     return Scaffold(
       appBar: _buildAppBar(context),
       body: Column(
@@ -39,39 +50,96 @@ class ToDoListPage extends StatelessWidget {
   }
 
   Widget _buildAppBar(BuildContext context) {
-    final toDoListBloc = BlocProvider.getBloc<ToDoListBloc>();
     return AppBar(
-      title: Text(toDoList.name),
-      actions: <Widget>[
-        IconButton(icon: Icon(Icons.search), onPressed: () {}),
-        PopupMenuButton<CollapsedAppBarActions>(
-          onSelected: (CollapsedAppBarActions selectedAction) {
-            switch (selectedAction) {
-              case CollapsedAppBarActions.edit:
-                break;
-              case CollapsedAppBarActions.delete:
-                toDoListBloc.addToDoListEventSink.add(ToDoListEvent(Actions.delete, toDoList));
-                Navigator.of(context).pop();
-                break;
-              default:
-                break;
-            }
-          },
-          itemBuilder: (context) {
-            return CollapsedAppBarActions.values.map((item) {
-              return PopupMenuItem<CollapsedAppBarActions>(
-                value: item,
-                child: Text(item.toString().split('.')[1]),
-              );
-            }).toList();
-          },
-        )
-      ],
+      title: _buildAppBarTitle(context),
+      actions: _buildAppBarActions(context)
     );
   }
 
+  Widget _buildAppBarTitle(BuildContext context) {
+    if ( editMode ) {
+      return _buildAppBarTitleEditMode(context);
+    }
+    return _buildAppBarTitleViewMode(context);
+  }
+
+  Widget _buildAppBarTitleEditMode(BuildContext context) {
+    return  Container(
+      padding: EdgeInsets.only(bottom: 4.0),
+      child: TextField(
+        autofocus: true,
+        controller: editTitleController,
+        decoration: InputDecoration(labelText: "To-do List Name"),
+      ),
+    );
+  }
+
+  Widget _buildAppBarTitleViewMode(BuildContext context) {
+    return Text(widget.toDoList.name);
+  }
+
+  List<Widget> _buildAppBarActions(BuildContext context) {
+    if ( editMode ) {
+      return _buildAppBarActionsEditMode(context);
+    }
+    return _buildAppBarActionsViewMode(context);
+  }
+
+  List<Widget> _buildAppBarActionsEditMode(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () {
+          setState(() {
+            editMode = false;
+          });
+        },
+        icon: Icon(Icons.close),
+      ),
+      IconButton(
+        onPressed: () {
+          widget.toDoList.name = editTitleController.text;
+          toDoListBloc.addToDoListEventSink.add(ToDoListEvent(Actions.update, widget.toDoList));
+          setState(() {
+            editMode = false;
+          });
+        },
+        icon: Icon(Icons.check),
+      ),
+    ];
+  }
+
+  List<Widget> _buildAppBarActionsViewMode(BuildContext context) {
+    return [
+      IconButton(icon: Icon(Icons.search), onPressed: () {}),
+      PopupMenuButton<CollapsedAppBarActions>(
+        onSelected: (CollapsedAppBarActions selectedAction) {
+          switch (selectedAction) {
+            case CollapsedAppBarActions.edit:
+              setState(() {
+                editMode = true;
+              });
+              break;
+            case CollapsedAppBarActions.delete:
+              toDoListBloc.addToDoListEventSink.add(ToDoListEvent(Actions.delete, widget.toDoList));
+              Navigator.of(context).pop();
+              break;
+            default:
+              break;
+          }
+        },
+        itemBuilder: (context) {
+          return CollapsedAppBarActions.values.map((item) {
+            return PopupMenuItem<CollapsedAppBarActions>(
+              value: item,
+              child: Text(item.toString().split('.')[1]),
+            );
+          }).toList();
+        },
+      )
+    ];
+  }
+
   Widget _buildProgressbar(BuildContext context) {
-    final taskBloc = BlocProvider.getBloc<TaskBloc>();
     return StreamBuilder<double>(
       stream: taskBloc.tasksProgress,
       initialData: 0,
@@ -86,7 +154,6 @@ class ToDoListPage extends StatelessWidget {
   }
 
   Widget _buildTaskList(BuildContext context) {
-    final taskBloc = BlocProvider.getBloc<TaskBloc>();
     return StreamBuilder<List<Task>>(
         stream: taskBloc.tasks,
         initialData: [],
@@ -116,7 +183,6 @@ class ToDoListPage extends StatelessWidget {
 
   Widget _buildModalBottomSheet(BuildContext context) {
     final TextEditingController taskNameController = TextEditingController();
-    final taskBloc = BlocProvider.getBloc<TaskBloc>();
     return Container(
       padding: EdgeInsets.only(
           left: 16.0,
@@ -136,7 +202,7 @@ class ToDoListPage extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).pop();
               taskBloc.addTaskEvent.add(Task(
-                  toDoUid: toDoList.uid,
+                  toDoUid: widget.toDoList.uid,
                   name: taskNameController.text,
                   isFinished: false));
               taskNameController.clear();

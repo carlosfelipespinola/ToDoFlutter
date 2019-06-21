@@ -2,9 +2,9 @@
 import 'ToDoListTableDetails.dart';
 
 class ToDoList {
-  final int uid;
-  final String name;
-  final double percentage;
+  int uid;
+  String name;
+  double percentage;
 
   ToDoList({this.uid, this.name, this.percentage});
 

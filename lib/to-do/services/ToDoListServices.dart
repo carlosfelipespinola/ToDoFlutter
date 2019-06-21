@@ -20,4 +20,8 @@ class ToDoListServices {
   Future<int> deleteToDoList(ToDoList toDoList) async {
     return ToDoListDao.deleteToDoList(toDoList);
   }
+
+  Future<int> updateToDoList(ToDoList toDoList) async {
+    return ToDoListDao.updateToDoList(toDoList);
+  }
 }
