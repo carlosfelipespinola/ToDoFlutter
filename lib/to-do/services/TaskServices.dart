@@ -33,4 +33,8 @@ class TaskServices {
     return TaskDao.getAllTasksFromToDoList(toDoUid);
   }
 
+  Future<List<Task>> getAllTasksFromToDoListBySearch(int toDoUid, String search) async {
+    return TaskDao.getTasksFromToDoListBySearch(toDoUid, search);
+  }
+
 }

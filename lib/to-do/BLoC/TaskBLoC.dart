@@ -13,6 +13,9 @@ class TaskBloc extends BlocBase {
   StreamSink<List<Task>> get _inTasks => _tasksController.sink;
   Stream<List<Task>> get tasks => _tasksController.stream;
 
+  final _tasksSearchController = StreamController<String>.broadcast();
+  StreamSink<String> get inSearchTask => _tasksSearchController.sink;
+
   final _tasksProgressController = StreamController<double>.broadcast();
   StreamSink<double> get _inTasksProgress => _tasksProgressController.sink;
   Stream<double> get tasksProgress => _tasksProgressController.stream;
@@ -26,8 +29,19 @@ class TaskBloc extends BlocBase {
 
   TaskBloc() {
     _taskServices = TaskServices();
+    this._tasksSearchController.stream.listen(_handleSearch);
     this._loadToDoListEventController.stream.listen(_handleAddToDoListUidEvent);
     this._tasksEventController.stream.listen(_handleAddTaskEvent);
+  }
+
+
+  void _handleSearch(String search) async {
+    if(search == "") {
+      _tasksOfToDoList = await _taskServices.getAllTasksFromTodo(toDoListUid);
+    } else {
+      _tasksOfToDoList = await _taskServices.getAllTasksFromToDoListBySearch(toDoListUid, search);
+    }
+    _inTasks.add(_tasksOfToDoList);
   }
 
   void _handleAddToDoListUidEvent(int uid) {
@@ -69,6 +83,7 @@ class TaskBloc extends BlocBase {
     _tasksController.close();
     _loadToDoListEventController.close();
     _tasksProgressController.close();
+    _tasksSearchController.close();
     super.dispose();
   }
 }

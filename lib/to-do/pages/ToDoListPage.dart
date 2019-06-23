@@ -7,6 +7,8 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:to_do_flutter/to-do/BLoC/TaskBLoC.dart';
 import 'package:to_do_flutter/to-do/BLoC/ToDoListBLoC.dart';
 
+import 'SearchTasksInToDoList.dart';
+
 enum CollapsedAppBarActions { edit, delete }
 
 var TO_DOS = [
@@ -52,7 +54,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
   Widget _buildAppBar(BuildContext context) {
     return AppBar(
       title: _buildAppBarTitle(context),
-      actions: _buildAppBarActions(context)
+      actions: _buildAppBarActions(context),
     );
   }
 
@@ -110,7 +112,13 @@ class _ToDoListPageState extends State<ToDoListPage> {
 
   List<Widget> _buildAppBarActionsViewMode(BuildContext context) {
     return [
-      IconButton(icon: Icon(Icons.search), onPressed: () {}),
+      IconButton(
+        icon: Icon(Icons.search),
+        onPressed: () async {
+          await showSearch(context: context, delegate: SearchTasksInToDoList(taskBloc));
+          BlocProvider.getBloc<ToDoListBloc>().addReloadToDoListsEventSink.add(null);
+        }
+      ),
       PopupMenuButton<CollapsedAppBarActions>(
         onSelected: (CollapsedAppBarActions selectedAction) {
           switch (selectedAction) {

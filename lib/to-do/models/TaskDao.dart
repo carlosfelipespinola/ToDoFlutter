@@ -33,4 +33,11 @@ class TaskDao {
     return listOfMapToDoList.map((toDoListMap) => Task.fromMap(toDoListMap)).toList();
   }
 
+  static Future<List<Task>> getTasksFromToDoListBySearch(int toDoUid, String search) async {
+    Database dbInstance = await AppDatabase.db.instance;
+    var sql = 'select * from $TASK_TABLE_NAME where $TASK_TO_DO_UID_NAME = $toDoUid and $TASK_NAME_FIELD like "%$search%"';
+    var listOfMapToDoList = await dbInstance.rawQuery(sql);
+    return listOfMapToDoList.map((toDoListMap) => Task.fromMap(toDoListMap)).toList();
+  }
+
 }
