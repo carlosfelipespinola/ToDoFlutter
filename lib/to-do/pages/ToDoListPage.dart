@@ -187,11 +187,12 @@ class _ToDoListPageState extends State<ToDoListPage> {
                     BlocProvider.getBloc<ToDoListBloc>().addReloadToDoListsEventSink.add(null);
                     Scaffold
                         .of(context)
-                        .showSnackBar(SnackBar(content: Text("${task.name} deletado")));
+                        .showSnackBar(SnackBar(content: Text("${task.name} deleted")));
                   },
                   child: ToDoTaskTile(
                       title: task.name,
                       checked: task.isFinished,
+                      onEditClick: () { _buildAndShowEditModalDialog(task); },
                       change: (checked) {
                         task.isFinished = checked;
                         taskBloc.addTaskEvent.add(TaskEvent(Actions.update, task));
@@ -222,7 +223,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
             child: TextField(
               autofocus: true,
               controller: taskNameController,
-              decoration: InputDecoration(labelText: "Task"),
+              decoration: InputDecoration(labelText: "name"),
             ),
           ),
           FlatButton(
@@ -240,5 +241,38 @@ class _ToDoListPageState extends State<ToDoListPage> {
         ],
       ),
     );
+  }
+
+  _buildAndShowEditModalDialog(Task task) {
+    var textController = TextEditingController(text: task.name);
+    showDialog(context: context, builder: (BuildContext context) {
+      return SimpleDialog(
+        title: Text("Edit task name"),
+        children: <Widget>[
+          TextField(
+            decoration: InputDecoration(labelText: "name"),
+            controller: textController,
+          ),
+          SizedBox(height: 10,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              OutlineButton(onPressed: () { Navigator.of(context).pop(); }, child: Text("Cancel"),),
+              SizedBox(width: 10,),
+              RaisedButton(onPressed: () {
+                if (textController.text.length > 0) {
+                  task.name = textController.text;
+                  taskBloc.addTaskEvent.add(TaskEvent(Actions.update, task));
+                }
+                Navigator.of(context).pop();
+              }, child: Text("Save"), color: Theme.of(context).primaryColor,)
+            ],
+          )
+        ],
+        contentPadding: EdgeInsets.symmetric(horizontal: 28.0, vertical: 16.0),
+
+      );
+    });
   }
 }
