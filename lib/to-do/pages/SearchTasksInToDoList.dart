@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_flutter/to-do/BLoC/SearchTaskBLoC.dart';
 import 'package:to_do_flutter/to-do/BLoC/TaskBLoC.dart';
+import 'package:to_do_flutter/to-do/BLoC/events/Actions.dart';
+import 'package:to_do_flutter/to-do/BLoC/events/TaskEvent.dart';
 import 'package:to_do_flutter/to-do/models/Task.dart';
 import 'package:to_do_flutter/to-do/widgets/ToDoTaskTile.dart';
 
@@ -80,7 +82,7 @@ class SearchTasksInToDoList extends SearchDelegate<List<Task>> {
               checked: task.isFinished,
               change: (checked) {
                 task.isFinished = checked;
-                bloc.addTaskEvent.add(task);
+                bloc.addTaskEvent.add(TaskEvent(Actions.update, task));
                 //BlocProvider.getBloc<ToDoListBloc>().addReloadToDoListsEventSink.add(null);
               });
         });

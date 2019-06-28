@@ -24,7 +24,12 @@ class TaskDao {
       conflictAlgorithm: ConflictAlgorithm.replace,
       where: '$TASK_UID_FIELD = ?', whereArgs: [task.uid]
     );
-  } 
+  }
+
+  static Future<int> delete(Task task) async {
+    Database dbInstance = await AppDatabase.db.instance;
+    return dbInstance.delete(TASK_TABLE_NAME, where: '$TASK_UID_FIELD = ?', whereArgs: [task.uid]);
+  }
 
   static Future<List<Task>> getAllTasksFromToDoList(int toDoUid) async {
     Database dbInstance = await AppDatabase.db.instance;

@@ -4,6 +4,9 @@ import 'package:to_do_flutter/to-do/services/TaskServices.dart';
 import 'package:to_do_flutter/to-do/services/ToDoListServices.dart';
 import 'dart:async';
 
+import 'events/Actions.dart';
+import 'events/TaskEvent.dart';
+
 class TaskBloc extends BlocBase {
   TaskServices _taskServices;
   int toDoListUid = -1;
@@ -21,8 +24,8 @@ class TaskBloc extends BlocBase {
   Stream<double> get tasksProgress => _tasksProgressController.stream;
 
 
-  final _tasksEventController = StreamController<Task>();
-  StreamSink<Task> get addTaskEvent => _tasksEventController.sink;
+  final _tasksEventController = StreamController<TaskEvent>();
+  StreamSink<TaskEvent> get addTaskEvent => _tasksEventController.sink;
 
   final _loadToDoListEventController = StreamController<int>();
   StreamSink<int> get addToDoListUidEvent => _loadToDoListEventController.sink;
@@ -49,12 +52,26 @@ class TaskBloc extends BlocBase {
     _updateTasks();
   }
 
-  void _handleAddTaskEvent(Task task) async {
-    if (task.uid == null) {
-      await _taskServices.insertNewTask(task);
-    } else {
-      await _taskServices.updateExistingTask(task);
+  void _handleAddTaskEvent(TaskEvent event) async {
+    switch(event.action) {
+      case Actions.delete:
+        await _taskServices.deleteTask(event.task);
+        break;
+      case Actions.insert:
+        await _taskServices.insertNewTask(event.task);
+        break;
+      case Actions.update:
+        await _taskServices.updateExistingTask(event.task);
+        break;
+      default:
+        break;
     }
+
+//    if (taskEvent.task.uid == null) {
+//      await _taskServices.insertNewTask(taskEvent.task);
+//    } else {
+//      await _taskServices.updateExistingTask(taskEvent.task);
+//    }
     _updateTasks();
   }
 

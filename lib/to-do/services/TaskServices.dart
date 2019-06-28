@@ -29,6 +29,10 @@ class TaskServices {
     return TaskDao.update(task);
   }
 
+  Future<int> deleteTask(Task task) async {
+    return TaskDao.delete(task);
+  }
+
   Future<List<Task>> getAllTasksFromTodo(int toDoUid) async {
     return TaskDao.getAllTasksFromToDoList(toDoUid);
   }

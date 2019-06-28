@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_flutter/to-do/BLoC/events/Actions.dart';
+import 'package:to_do_flutter/to-do/BLoC/events/TaskEvent.dart';
 import 'package:to_do_flutter/to-do/BLoC/events/ToDoListEvent.dart';
 import 'package:to_do_flutter/to-do/models/ToDoList.dart';
 import 'package:to_do_flutter/to-do/widgets/ToDoTaskTile.dart';
@@ -171,14 +173,31 @@ class _ToDoListPageState extends State<ToDoListPage> {
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
                 var task = snapshot.data[index];
-                return ToDoTaskTile(
-                    title: task.name,
-                    checked: task.isFinished,
-                    change: (checked) {
-                      task.isFinished = checked;
-                      taskBloc.addTaskEvent.add(task);
-                      BlocProvider.getBloc<ToDoListBloc>().addReloadToDoListsEventSink.add(null);
-                    });
+                return Dismissible(
+                  key: Key(task.uid.toString()),
+                  direction: DismissDirection.startToEnd,
+                  background: Container(
+                    color: Theme.of(context).errorColor,
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.all(16),
+                    child: Icon(Icons.delete),
+                  ),
+                  onDismissed: (direction) {
+                    taskBloc.addTaskEvent.add(TaskEvent(Actions.delete, task));
+                    BlocProvider.getBloc<ToDoListBloc>().addReloadToDoListsEventSink.add(null);
+                    Scaffold
+                        .of(context)
+                        .showSnackBar(SnackBar(content: Text("${task.name} deletado")));
+                  },
+                  child: ToDoTaskTile(
+                      title: task.name,
+                      checked: task.isFinished,
+                      change: (checked) {
+                        task.isFinished = checked;
+                        taskBloc.addTaskEvent.add(TaskEvent(Actions.update, task));
+                        BlocProvider.getBloc<ToDoListBloc>().addReloadToDoListsEventSink.add(null);
+                      }),
+                );
               });
         });
   }
@@ -209,10 +228,10 @@ class _ToDoListPageState extends State<ToDoListPage> {
           FlatButton(
             onPressed: () {
               Navigator.of(context).pop();
-              taskBloc.addTaskEvent.add(Task(
+              taskBloc.addTaskEvent.add(TaskEvent(Actions.insert, Task(
                   toDoUid: widget.toDoList.uid,
                   name: taskNameController.text,
-                  isFinished: false));
+                  isFinished: false)));
               taskNameController.clear();
             },
             child: Text("ADD"),
