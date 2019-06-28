@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:to_do_flutter/to-do/BLoC/TaskBLoC.dart';
 import 'package:to_do_flutter/to-do/BLoC/ToDoListBLoC.dart';
 import 'package:to_do_flutter/to-do/pages/HomePage.dart';
-import 'package:to_do_flutter/to-do/pages/ToDoListPage.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 
 void main() => runApp(MyApp());
@@ -15,6 +14,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
+            pageTransitionsTheme: PageTransitionsTheme(builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder(),}),
             brightness: Brightness.dark,
             primarySwatch: Colors.deepPurple,
             primaryColor: Colors.deepPurple,
